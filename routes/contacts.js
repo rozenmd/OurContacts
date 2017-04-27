@@ -13,12 +13,13 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function (req, res) {
     var contact = new Contact();
-    contact.first_name = req.first_name;
-    contact.last_name = req.last_name;
-    contact.email = req.email;
-    contact.company = req.company;
-    contact.primary_phone = req.primary_phone;
-
+    console.log(req);
+    contact.first_name = req.body.first_name;
+    contact.last_name = req.body.last_name;
+    contact.email = req.body.email;
+    contact.company = req.body.company;
+    contact.primary_phone = req.body.primary_phone;
+    console.log(contact.email);
     contact.save(function (err) {
         if (err)
             res.send(err);
