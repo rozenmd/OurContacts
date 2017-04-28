@@ -4,7 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var morgan = require('morgan');
 var cors = require('cors');
+var config = require('./config'); // get our config file
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -43,8 +45,12 @@ app.use('/users', users);
 app.use('/contacts', contacts);
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/contacts'); // connect to our database
 var port = process.env.PORT || 3000;        // set our port
+mongoose.connect(config.database); // connect to database
+app.set('superSecret', config.secret); // secret variable
+
+//Wonder if this works
+app.use(morgan('dev'));
 
 
 // catch 404 and forward to error handler
@@ -64,7 +70,6 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
-
 module.exports = app;
 
 app.listen(port);
