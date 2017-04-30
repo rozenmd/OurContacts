@@ -21,22 +21,4 @@ router.post('/', function (req, res, next) {
     });
 });
 
-router.get('/setup', function (req, res) {
-
-    // create a sample user
-    var max = new User({
-        username: 'rozenmd',
-        password: 'password'
-
-    });
-
-    // save the sample user
-    max.save(function (err) {
-        if (err)
-            res.send(err);
-
-        res.json(max);
-
-    });
-});
 module.exports = router;

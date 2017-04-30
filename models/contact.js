@@ -5,7 +5,10 @@ var ContactSchema   = new Schema({
     first_name: String,
     last_name: String,
     email: String,
-    company: String
+    company: String,
+    userId: String
+
 });
 
-module.exports = mongoose.model('Contact', ContactSchema);
+var Contact = mongoose.model('Contact', ContactSchema);
+module.exports = Contact;

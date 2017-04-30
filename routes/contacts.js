@@ -7,13 +7,15 @@ var authController = require('../routes/auth');
 router.post('/', authController.isAuthenticated, function (req, res) {
 
     // Create a new instance of the Contact model
-    var contact = new Contact();
+    console.log(req);
+    var contact = new Contact({
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        company: req.body.company,
+        email: req.body.email,
+        userId: req.user._id
+    });
 
-    // Set the contact properties that came from the POST data
-    contact.first_name = req.body.first_name;
-    contact.last_name = req.body.last_name;
-    contact.company = req.body.company;
-    contact.email = req.body.email;
 
     // Save the contact and check for errors
     contact.save(function (err) {
@@ -27,7 +29,7 @@ router.post('/', authController.isAuthenticated, function (req, res) {
 // Create endpoint /api/contacts for GET
 router.get('/', authController.isAuthenticated, function (req, res) {
     // Use the Contact model to find all contact
-    Contact.find(function (err, contacts) {
+    Contact.find({userId: req.user._id}, function (err, contacts) {
         if (err)
             res.send(err);
 
@@ -37,14 +39,14 @@ router.get('/', authController.isAuthenticated, function (req, res) {
 router.route('/:contact_id')
 // get the contact with that id (accessed at GET http://localhost:3000/contacts/:contact_id)
     .get(function (req, res) {
-        Contact.findById(req.params.contact_id, function (err, contact) {
+        Contact.findById({userId: req.user._id, _id: req.params.contact_id}, function (err, contact) {
             if (err)
                 res.send(err);
             res.json(contact);
         });
     })
     .put(function (req, res) {
-        Contact.findById(req.params.contact_id, function (err, contact) {
+        Contact.findById({userId: req.user._id, _id: req.params.contact_id}, function (err, contact) {
             if (err)
                 res.send(err);
 
@@ -64,7 +66,7 @@ router.route('/:contact_id')
         });
     })
     .delete(function (req, res) {
-        Contact.findByIdAndRemove(req.params.contact_id, function (err) {
+        Contact.findByIdAndRemove({userId: req.user._id, _id: req.params.contact_id}, function (err) {
             if (err)
                 res.send(err);
 

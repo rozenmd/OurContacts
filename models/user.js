@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 
 // create a schema
-var userSchema = new Schema({
+var UserSchema = new Schema({
     name: String,
     username: {
         type: String,
@@ -25,7 +25,7 @@ var userSchema = new Schema({
     updated_at: Date
 });
 
-userSchema.pre('save', function (callback) {
+UserSchema.pre('save', function (callback) {
     var user = this;
     // Break out if the password hasn't changed
     if (!user.isModified('password')) return callback();
@@ -50,7 +50,7 @@ userSchema.pre('save', function (callback) {
 });
 
 
-userSchema.methods.verifyPassword = function (password, cb) {
+UserSchema.methods.verifyPassword = function (password, cb) {
     bcrypt.compare(password, this.password, function (err, isMatch) {
         if (err) return cb(err);
         cb(null, isMatch);
@@ -58,7 +58,7 @@ userSchema.methods.verifyPassword = function (password, cb) {
 };
 // the schema is useless so far
 // we need to create a model using it
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model('User', UserSchema);
 
 // make this available to our users in our Node applications
 module.exports = User;
