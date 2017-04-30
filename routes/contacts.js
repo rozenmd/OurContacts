@@ -1,8 +1,32 @@
 var express = require('express');
 var router = express.Router();
-var Contact = require('../models/contact'); //create a contact model
-/* GET home page. */
-router.get('/', function (req, res, next) {
+var Contact = require('../models/contact');
+var authController = require('../routes/auth');
+
+// Create endpoint /api/contacts for POSTS
+router.post('/', authController.isAuthenticated, function (req, res) {
+
+    // Create a new instance of the Contact model
+    var contact = new Contact();
+
+    // Set the contact properties that came from the POST data
+    contact.first_name = req.body.first_name;
+    contact.last_name = req.body.last_name;
+    contact.company = req.body.company;
+    contact.email = req.body.email;
+
+    // Save the contact and check for errors
+    contact.save(function (err) {
+        if (err)
+            res.send(err);
+
+        res.json({message: 'Contact added to the db!', data: contact});
+    });
+});
+
+// Create endpoint /api/contacts for GET
+router.get('/', authController.isAuthenticated, function (req, res) {
+    // Use the Contact model to find all contact
     Contact.find(function (err, contacts) {
         if (err)
             res.send(err);
@@ -10,24 +34,6 @@ router.get('/', function (req, res, next) {
         res.json(contacts);
     });
 });
-
-router.post('/', function (req, res) {
-    var contact = new Contact();
-    console.log(req);
-    contact.first_name = req.body.first_name;
-    contact.last_name = req.body.last_name;
-    contact.email = req.body.email;
-    contact.company = req.body.company;
-    contact.primary_phone = req.body.primary_phone;
-    console.log(contact.email);
-    contact.save(function (err) {
-        if (err)
-            res.send(err);
-
-        res.json({message: 'Contact Created!'});
-    });
-});
-
 router.route('/:contact_id')
 // get the contact with that id (accessed at GET http://localhost:3000/contacts/:contact_id)
     .get(function (req, res) {
@@ -39,31 +45,30 @@ router.route('/:contact_id')
     })
     .put(function (req, res) {
         Contact.findById(req.params.contact_id, function (err, contact) {
-
             if (err)
                 res.send(err);
 
-            contact.first_name = req.body.first_name;  // update the bears info
+            // Update the existing contact quantity
+            contact.first_name = req.body.first_name;
+            contact.last_name = req.body.last_name;
+            contact.company = req.body.company;
+            contact.email = req.body.email;
 
-            // save the bear
+            // Save the contact and check for errors
             contact.save(function (err) {
                 if (err)
                     res.send(err);
 
-                res.json({message: 'Contact updated!'});
+                res.json(contact);
             });
-
         });
     })
     .delete(function (req, res) {
-        Contact.remove({
-            _id: req.params.contact_id
-        }, function (err, contact) {
+        Contact.findByIdAndRemove(req.params.contact_id, function (err) {
             if (err)
                 res.send(err);
 
-            res.json({message: 'Successfully deleted'});
+            res.json({message: 'Contact removed from the db!'});
         });
     });
-
 module.exports = router;

@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var app         = express();
+
 var User = require('../models/user'); //create a contact model
 /* GET home page. */
 router.get('/', function (req, res, next) {

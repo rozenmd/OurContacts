@@ -7,7 +7,8 @@ var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var cors = require('cors');
 var config = require('./config'); // get our config file
-
+var passport = require('passport');
+var authController = require('./routes/auth');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var contacts = require('./routes/contacts');
@@ -39,6 +40,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
 
 app.use('/', index);
 app.use('/users', users);
@@ -46,12 +48,11 @@ app.use('/contacts', contacts);
 
 var mongoose = require('mongoose');
 var port = process.env.PORT || 3000;        // set our port
-mongoose.connect(config.database); // connect to database
+mongoose.connect(config.database2); // connect to database
 app.set('superSecret', config.secret); // secret variable
 
 //Wonder if this works
 app.use(morgan('dev'));
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
